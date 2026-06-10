@@ -1,0 +1,74 @@
+"""Schémas Pydantic d'entrée/sortie de l'API."""
+
+from __future__ import annotations
+
+from datetime import datetime
+
+from btp.database.models.enums import ProjectStatus, UserRole
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
+
+
+# --- Auth ---------------------------------------------------------------------
+class Token(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+
+
+# --- Users --------------------------------------------------------------------
+class UserCreate(BaseModel):
+    email: EmailStr
+    password: str = Field(min_length=8)
+    full_name: str | None = None
+    role: UserRole = UserRole.LECTURE_SEULE
+
+
+class UserOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: str
+    # Sortie : on fait confiance à la valeur stockée (pas de re-validation,
+    # ce qui autorise des domaines internes type *.local).
+    email: str
+    full_name: str | None
+    role: UserRole
+    is_active: bool
+    created_at: datetime
+
+
+# --- Projects -----------------------------------------------------------------
+class ProjectCreate(BaseModel):
+    name: str = Field(min_length=1, max_length=255)
+    description: str | None = None
+    client_id: str | None = None
+    status: ProjectStatus = ProjectStatus.PROSPECT
+
+
+class ProjectUpdate(BaseModel):
+    name: str | None = Field(default=None, max_length=255)
+    description: str | None = None
+    client_id: str | None = None
+    status: ProjectStatus | None = None
+
+
+class ProjectOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: str
+    name: str
+    description: str | None
+    status: ProjectStatus
+    client_id: str | None
+    created_at: datetime
+    updated_at: datetime
+
+
+# --- Agents -------------------------------------------------------------------
+class AgentInfo(BaseModel):
+    name: str
+    description: str
+
+
+class SupervisorRequest(BaseModel):
+    prompt: str
+    project_id: str | None = None
+    inputs: dict[str, object] = Field(default_factory=dict)

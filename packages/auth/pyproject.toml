@@ -1,0 +1,17 @@
+[project]
+name = "btp-auth"
+version = "1.0.0"
+description = "Authentification JWT et RBAC — BTP Agent Platform"
+requires-python = ">=3.11"
+dependencies = [
+    "btp-database",
+    "passlib>=1.7",
+    "pyjwt>=2.9",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["btp"]

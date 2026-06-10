@@ -1,0 +1,17 @@
+[project]
+name = "btp-workers"
+version = "1.0.0"
+description = "Workers asynchrones (tâches longues, exécution d'agents) — BTP Agent Platform"
+requires-python = ">=3.11"
+dependencies = [
+    "redis>=5.0",
+    "btp-agents",
+    "btp-database",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["btp_workers"]

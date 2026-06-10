@@ -1,0 +1,13 @@
+[project]
+name = "btp-quotes"
+version = "1.0.0"
+description = "Services métier devis — BTP Agent Platform"
+requires-python = ">=3.11"
+dependencies = ["btp-database"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["btp"]
