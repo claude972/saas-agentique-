@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from btp.database.models.enums import ProjectStatus, UserRole
+from btp.database.models.enums import ProjectStatus, ReportKind, UserRole
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 
@@ -153,3 +153,33 @@ class QuoteOut(BaseModel):
 
 class QuoteDetail(QuoteOut):
     lines: list[QuoteLineOut] = Field(default_factory=list)
+
+
+# --- Photos (chantier) --------------------------------------------------------
+class PhotoOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: str
+    project_id: str | None
+    caption: str | None
+    analysis: str | None
+    created_at: datetime
+
+
+# --- Reports (comptes-rendus) -------------------------------------------------
+class ReportCreate(BaseModel):
+    title: str = Field(min_length=1, max_length=512)
+    kind: ReportKind = ReportKind.CHANTIER
+    notes: str | None = None
+
+
+class ReportOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: str
+    project_id: str
+    kind: ReportKind
+    title: str
+    content: str | None
+    validated: bool
+    created_at: datetime

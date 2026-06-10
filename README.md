@@ -48,8 +48,11 @@ Voir [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) pour le détail et
 | 1 | Auth · Rôles · Projets | ✅ Implémenté (API + DB + RBAC) |
 | 2 | Documents · Stockage · OCR | 🟡 Upload/stockage/download OK ; OCR à venir |
 | 3 | Chat · Supervisor | ✅ Conversation + mémoire persistante |
-| 4–9 | Agents (Photo, Quote, Report, AO, Consultation, Tender) | 🏗️ Interfaces + stubs |
-| 10 | PWA | 🏗️ Scaffold frontend |
+| 4 | PhotoAgent | ✅ Upload photo + analyse (vision) |
+| 5 | QuoteAgent | ✅ Devis structuré → PDF → archivage |
+| 6 | ReportAgent | ✅ Comptes-rendus + validation |
+| 7–9 | AO Crawler · Consultation · Tender | 🏗️ Interfaces + stubs |
+| 10 | PWA | 🏗️ Scaffold frontend (manifest + mobile) |
 
 > **LLM réel** : le routeur multi-LLM intègre Claude (SDK `anthropic`). Avec une
 > clé `ANTHROPIC_API_KEY`, tout le pipeline agentique devient fonctionnel ; sans

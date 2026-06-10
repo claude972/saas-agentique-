@@ -12,8 +12,10 @@ from btp_api.routers import (
     chat,
     documents,
     health,
+    photos,
     projects,
     quotes,
+    reports,
     users,
 )
 
@@ -40,6 +42,8 @@ def create_app() -> FastAPI:
     app.include_router(projects.router)
     app.include_router(documents.router)
     app.include_router(quotes.router)
+    app.include_router(photos.router)
+    app.include_router(reports.router)
     app.include_router(chat.router)
     app.include_router(agents.router)
 
