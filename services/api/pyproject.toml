@@ -16,6 +16,7 @@ dependencies = [
     "btp-llm-router",
     "btp-documents",
     "btp-quotes",
+    "btp-crm",
 ]
 
 [project.scripts]

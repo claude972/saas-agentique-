@@ -4,7 +4,12 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from btp.database.models.enums import ProjectStatus, ReportKind, UserRole
+from btp.database.models.enums import (
+    OpportunityStage,
+    ProjectStatus,
+    ReportKind,
+    UserRole,
+)
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 
@@ -217,3 +222,69 @@ class ConsultationAnalyzeRequest(BaseModel):
 class TenderResponseOut(BaseModel):
     document_id: str
     memoire_technique: str
+
+
+# --- CRM ----------------------------------------------------------------------
+class ClientCreate(BaseModel):
+    name: str = Field(min_length=1, max_length=255)
+    siret: str | None = None
+    address: str | None = None
+
+
+class ClientOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: str
+    name: str
+    siret: str | None
+    address: str | None
+    created_at: datetime
+
+
+class ContactCreate(BaseModel):
+    full_name: str = Field(min_length=1, max_length=255)
+    role: str | None = None
+    email: str | None = None
+    phone: str | None = None
+
+
+class ContactOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: str
+    client_id: str
+    full_name: str
+    role: str | None
+    email: str | None
+    phone: str | None
+
+
+class OpportunityCreate(BaseModel):
+    title: str = Field(min_length=1, max_length=255)
+    stage: OpportunityStage = OpportunityStage.NOUVELLE
+    amount: float | None = None
+
+
+class OpportunityOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: str
+    client_id: str
+    title: str
+    stage: OpportunityStage
+    amount: float | None
+
+
+class InteractionCreate(BaseModel):
+    summary: str = Field(min_length=1)
+    channel: str = "note"
+
+
+class InteractionOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: str
+    client_id: str
+    channel: str
+    summary: str
+    created_at: datetime

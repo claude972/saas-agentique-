@@ -11,6 +11,7 @@ from btp_api.routers import (
     ao,
     auth,
     chat,
+    crm,
     documents,
     health,
     photos,
@@ -46,6 +47,7 @@ def create_app() -> FastAPI:
     app.include_router(photos.router)
     app.include_router(reports.router)
     app.include_router(ao.router)
+    app.include_router(crm.router)
     app.include_router(chat.router)
     app.include_router(agents.router)
 

@@ -225,6 +225,7 @@ source = { editable = "services/api" }
 dependencies = [
     { name = "btp-agents" },
     { name = "btp-auth" },
+    { name = "btp-crm" },
     { name = "btp-database" },
     { name = "btp-documents" },
     { name = "btp-llm-router" },
@@ -241,6 +242,7 @@ dependencies = [
 requires-dist = [
     { name = "btp-agents", editable = "packages/agents" },
     { name = "btp-auth", editable = "packages/auth" },
+    { name = "btp-crm", editable = "packages/crm" },
     { name = "btp-database", editable = "packages/database" },
     { name = "btp-documents", editable = "packages/documents" },
     { name = "btp-llm-router", editable = "packages/llm-router" },
