@@ -6,7 +6,7 @@
 | 2 | **Documents · Stockage · OCR** | Upload (local/S3), download, versioning ; OCR (DocumentAgent) à venir | 🟡 |
 | 3 | **Chat · Supervisor** | Conversation/projet, mémoire persistante, SupervisorAgent | ✅ |
 | 4 | **PhotoAgent** | Analyse photo → ouvrages, quantités, anomalies | 🏗️ |
-| 5 | **QuoteAgent** | Devis JSON → PDF → archivage | 🏗️ |
+| 5 | **QuoteAgent** | Devis JSON → PDF → archivage | ✅ |
 | 6 | **ReportAgent** | Comptes-rendus chantier/visite/réunion | 🏗️ |
 | 7 | **AO Crawler** | Détection, téléchargement, qualification GO/NO-GO | 🏗️ |
 | 8 | **ConsultationAgent** | Lecture CCTP/CCAP/BPU/DPGF/plans | 🏗️ |

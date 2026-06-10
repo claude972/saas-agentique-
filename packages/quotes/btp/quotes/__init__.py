@@ -8,7 +8,13 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-__all__ = ["QuoteLineDraft", "QuoteDraft", "compute_total"]
+__all__ = [
+    "QuoteLineDraft",
+    "QuoteDraft",
+    "compute_total",
+    "persist_quote",
+    "render_quote_pdf",
+]
 
 
 @dataclass
@@ -35,3 +41,8 @@ class QuoteDraft:
 
 def compute_total(lines: list[QuoteLineDraft]) -> float:
     return round(sum(line.total for line in lines), 2)
+
+
+# Importés en fin de module pour éviter les cycles (ils dépendent de QuoteDraft).
+from btp.quotes.pdf import render_quote_pdf  # noqa: E402
+from btp.quotes.service import persist_quote  # noqa: E402

@@ -118,3 +118,38 @@ class DocumentOut(BaseModel):
     kind: str
     version: int
     created_at: datetime
+
+
+class DocumentDetail(DocumentOut):
+    ocr_text: str | None = None
+
+
+# --- Quotes (devis) -----------------------------------------------------------
+class QuoteGenerateRequest(BaseModel):
+    description: str = Field(min_length=1)
+
+
+class QuoteLineOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    position: int
+    designation: str
+    unit: str
+    quantity: float
+    unit_price: float
+
+
+class QuoteOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: str
+    project_id: str
+    reference: str
+    status: str
+    total_ht: float
+    pdf_s3_key: str | None
+    created_at: datetime
+
+
+class QuoteDetail(QuoteOut):
+    lines: list[QuoteLineOut] = Field(default_factory=list)

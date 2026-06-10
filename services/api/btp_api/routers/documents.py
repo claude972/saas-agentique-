@@ -9,15 +9,17 @@ from __future__ import annotations
 import uuid
 from typing import Annotated
 
+from btp.agents import AgentContext, get_agent
 from btp.auth.rbac import Action, Resource
 from btp.database.models import Document, Project, User
+from btp.database.models.enums import DocumentKind
 from btp.documents import get_object_store
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from fastapi.responses import Response
 from sqlalchemy import select
 
 from btp_api.deps import DbSession, require_permission
-from btp_api.schemas import DocumentOut
+from btp_api.schemas import DocumentDetail, DocumentOut
 
 router = APIRouter(tags=["documents"])
 
@@ -62,6 +64,39 @@ def list_documents(project_id: str, db: DbSession, _: _read) -> list[Document]:
         .order_by(Document.created_at.desc())
     )
     return list(db.scalars(stmt))
+
+
+@router.post("/documents/{document_id}/analyze", response_model=DocumentDetail)
+async def analyze_document(document_id: str, db: DbSession, _: _write) -> Document:
+    """Extrait le texte (OCR) et classe le document via le DocumentAgent.
+
+    Pour les fichiers texte, l'extraction est directe ; pour les autres, le
+    DocumentAgent (LLM/vision) est sollicité — repli gracieux hors-ligne.
+    """
+    document = db.get(Document, document_id)
+    if document is None or not document.s3_key:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Document introuvable")
+
+    data = get_object_store().get(document.s3_key)
+    mime = (document.mime_type or "").lower()
+
+    if mime.startswith("text/") or mime in ("application/json", "application/xml"):
+        document.ocr_text = data.decode("utf-8", errors="replace")
+    else:
+        agent = get_agent("DocumentAgent")
+        result = await agent.run(
+            AgentContext(prompt=f"Document: {document.filename}", inputs={"images": [data]})
+        )
+        document.ocr_text = str(result.output.get("ocr_text") or result.summary)
+        kind = result.output.get("kind")
+        if isinstance(kind, str):
+            try:
+                document.kind = DocumentKind(kind)
+            except ValueError:
+                pass
+
+    db.flush()
+    return document
 
 
 @router.get("/documents/{document_id}/download")

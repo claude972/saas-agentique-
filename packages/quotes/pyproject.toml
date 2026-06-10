@@ -3,7 +3,7 @@ name = "btp-quotes"
 version = "1.0.0"
 description = "Services métier devis — BTP Agent Platform"
 requires-python = ">=3.11"
-dependencies = ["btp-database"]
+dependencies = ["btp-database", "reportlab>=4.0"]
 
 [build-system]
 requires = ["hatchling"]
