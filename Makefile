@@ -5,7 +5,9 @@ help:
 	@echo "  install   Installer les dépendances Python (uv) et JS (pnpm)"
 	@echo "  up        Démarrer Postgres + Redis (docker compose)"
 	@echo "  down      Arrêter l'infra locale"
-	@echo "  init-db   Initialiser la base de données"
+	@echo "  init-db   Initialiser la base (create_all, dev rapide)"
+	@echo "  migrate   Appliquer les migrations Alembic (prod)"
+	@echo "  migration Générer une migration  (make migration m=\"message\")"
 	@echo "  api       Lancer l'API FastAPI (port 8000)"
 	@echo "  web       Lancer le frontend Next.js (port 3000)"
 	@echo "  test      Lancer la suite de tests Python"
@@ -24,6 +26,12 @@ down:
 
 init-db:
 	uv run btp-api init-db
+
+migrate:
+	uv run alembic upgrade head
+
+migration:
+	uv run alembic revision --autogenerate -m "$(m)"
 
 api:
 	uv run uvicorn btp_api.main:app --reload --port 8000

@@ -15,8 +15,9 @@ puis définir les variables d'environnement (cf. `.env.example`) :
 | `CORS_ORIGINS` | ✅ | URL du frontend Vercel |
 | `S3_*` | ⛔️ | optionnel ; sans config, stockage local |
 
-La commande `release` (Procfile) ou un job ponctuel exécute `btp-api init-db`
-pour créer les tables. Créer l'admin :
+La commande `release` (Procfile) applique les **migrations Alembic**
+(`alembic upgrade head`) au déploiement. En développement, `btp-api init-db`
+(`create_all`) reste un raccourci. Créer l'admin :
 
 ```bash
 railway run uv run btp-api create-admin --email admin@votre-domaine.fr --password '********'

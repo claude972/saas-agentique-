@@ -120,4 +120,6 @@ choisir le bon modèle selon la nature de la tâche.
 - **S3** : fichiers (photos, PDF, devis générés).
 
 Les modèles sont décrits dans `btp.database.models`. Migrations gérées via
-Alembic (config dans `packages/database`).
+**Alembic** (`alembic.ini` + `migrations/` à la racine ; `env.py` relié à
+`Base.metadata`). Appliquer : `make migrate` (`alembic upgrade head`) ;
+générer : `make migration m="..."`.
