@@ -64,6 +64,26 @@ export interface CurrentUser {
   is_active: boolean;
 }
 
+export interface Conversation {
+  id: string;
+  project_id: string | null;
+  title: string | null;
+  created_at: string;
+}
+
+export interface ChatMessage {
+  id: string;
+  role: string;
+  content: string;
+  created_at: string;
+}
+
+export interface ChatPostResponse {
+  user_message: ChatMessage;
+  assistant_message: ChatMessage;
+  plan: { agents: string[]; parallel: boolean };
+}
+
 export const api = {
   me: () => request<CurrentUser>("/auth/me"),
   listProjects: () => request<Project[]>("/projects"),
@@ -71,5 +91,21 @@ export const api = {
     request<Project>("/projects", {
       method: "POST",
       body: JSON.stringify(payload),
+    }),
+
+  // Chat (mémoire persistante par projet)
+  listConversations: (projectId: string) =>
+    request<Conversation[]>(`/projects/${projectId}/conversations`),
+  createConversation: (projectId: string, title?: string) =>
+    request<Conversation>(`/projects/${projectId}/conversations`, {
+      method: "POST",
+      body: JSON.stringify({ title }),
+    }),
+  listMessages: (conversationId: string) =>
+    request<ChatMessage[]>(`/conversations/${conversationId}/messages`),
+  postMessage: (conversationId: string, content: string) =>
+    request<ChatPostResponse>(`/conversations/${conversationId}/messages`, {
+      method: "POST",
+      body: JSON.stringify({ content }),
     }),
 };

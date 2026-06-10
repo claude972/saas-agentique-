@@ -15,6 +15,7 @@ def _env() -> Iterator[None]:
     tmpdir = tempfile.mkdtemp()
     os.environ["DATABASE_URL"] = f"sqlite:///{tmpdir}/test.db"
     os.environ["SECRET_KEY"] = "test-secret-key-please-do-not-use-in-prod-0123456789"
+    os.environ["LOCAL_STORAGE_ROOT"] = f"{tmpdir}/storage"
     yield
 
 

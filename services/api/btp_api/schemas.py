@@ -72,3 +72,49 @@ class SupervisorRequest(BaseModel):
     prompt: str
     project_id: str | None = None
     inputs: dict[str, object] = Field(default_factory=dict)
+
+
+# --- Chat ---------------------------------------------------------------------
+class ConversationCreate(BaseModel):
+    title: str | None = None
+
+
+class ConversationOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: str
+    project_id: str | None
+    title: str | None
+    created_at: datetime
+
+
+class ChatMessageOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: str
+    role: str
+    content: str
+    created_at: datetime
+
+
+class ChatPostRequest(BaseModel):
+    content: str = Field(min_length=1)
+
+
+class ChatPostResponse(BaseModel):
+    user_message: ChatMessageOut
+    assistant_message: ChatMessageOut
+    plan: dict[str, object]
+
+
+# --- Documents ----------------------------------------------------------------
+class DocumentOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: str
+    project_id: str | None
+    filename: str
+    mime_type: str | None
+    kind: str
+    version: int
+    created_at: datetime

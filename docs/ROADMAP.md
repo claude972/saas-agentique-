@@ -3,8 +3,8 @@
 | Sprint | Périmètre | Livrables clés | État |
 |-------:|-----------|----------------|------|
 | 1 | **Auth · Rôles · Projets** | JWT, RBAC 5 rôles, CRUD projets, CLI admin | ✅ |
-| 2 | **Documents · Stockage · OCR** | Upload S3, versioning, OCR (DocumentAgent) | 🏗️ |
-| 3 | **Chat · Supervisor** | Conversation/projet, mémoire persistante, SupervisorAgent | 🏗️ |
+| 2 | **Documents · Stockage · OCR** | Upload (local/S3), download, versioning ; OCR (DocumentAgent) à venir | 🟡 |
+| 3 | **Chat · Supervisor** | Conversation/projet, mémoire persistante, SupervisorAgent | ✅ |
 | 4 | **PhotoAgent** | Analyse photo → ouvrages, quantités, anomalies | 🏗️ |
 | 5 | **QuoteAgent** | Devis JSON → PDF → archivage | 🏗️ |
 | 6 | **ReportAgent** | Comptes-rendus chantier/visite/réunion | 🏗️ |

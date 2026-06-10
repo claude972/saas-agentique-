@@ -80,11 +80,31 @@ class LLMRouter:
         return self._clients[provider]
 
     def _build_client(self, provider: Provider) -> LLMProvider:
-        # Les intégrations réelles seront branchées ici (Sprints agents).
-        # En l'absence de clé, on retombe sur le mock déterministe.
-        if not self.is_configured(provider):
-            return EchoProvider()
-        return EchoProvider()  # placeholder : à remplacer par le vrai client
+        """Construit le client d'un provider.
+
+        Stratégie pour rester fonctionnel dès qu'une seule clé est fournie :
+        1. si le provider routé est configuré → son client réel ;
+        2. sinon, si Claude est configuré → Claude (multimodal, polyvalent) ;
+        3. sinon → mock déterministe hors-ligne.
+        """
+        if self.is_configured(provider):
+            return self._make_real(provider)
+        if self.is_configured(Provider.CLAUDE):
+            return self._make_real(Provider.CLAUDE)
+        return EchoProvider()
+
+    def _make_real(self, provider: Provider) -> LLMProvider:
+        if provider is Provider.CLAUDE:
+            from btp.llm_router.anthropic_provider import AnthropicProvider
+
+            return AnthropicProvider()
+        # Les intégrations GPT / Gemini / Mistral seront branchées ici ;
+        # en attendant, on retombe sur Claude si possible, sinon sur le mock.
+        if self.is_configured(Provider.CLAUDE):
+            from btp.llm_router.anthropic_provider import AnthropicProvider
+
+            return AnthropicProvider()
+        return EchoProvider()
 
 
 @lru_cache(maxsize=1)

@@ -46,10 +46,14 @@ Voir [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) pour le détail et
 | Sprint | Périmètre | État |
 |-------:|-----------|------|
 | 1 | Auth · Rôles · Projets | ✅ Implémenté (API + DB + RBAC) |
-| 2 | Documents · Stockage · OCR | 🏗️ Scaffold + interfaces |
-| 3 | Chat · Supervisor | 🏗️ Scaffold + interfaces |
+| 2 | Documents · Stockage · OCR | 🟡 Upload/stockage/download OK ; OCR à venir |
+| 3 | Chat · Supervisor | ✅ Conversation + mémoire persistante |
 | 4–9 | Agents (Photo, Quote, Report, AO, Consultation, Tender) | 🏗️ Interfaces + stubs |
 | 10 | PWA | 🏗️ Scaffold frontend |
+
+> **LLM réel** : le routeur multi-LLM intègre Claude (SDK `anthropic`). Avec une
+> clé `ANTHROPIC_API_KEY`, tout le pipeline agentique devient fonctionnel ; sans
+> clé, un provider mock déterministe permet le développement et les tests hors-ligne.
 
 ## Démarrage rapide
 

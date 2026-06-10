@@ -6,7 +6,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from btp_api.config import get_settings
-from btp_api.routers import agents, auth, health, projects, users
+from btp_api.routers import agents, auth, chat, documents, health, projects, users
 
 
 def create_app() -> FastAPI:
@@ -29,6 +29,8 @@ def create_app() -> FastAPI:
     app.include_router(auth.router)
     app.include_router(users.router)
     app.include_router(projects.router)
+    app.include_router(documents.router)
+    app.include_router(chat.router)
     app.include_router(agents.router)
 
     @app.get("/", tags=["health"])

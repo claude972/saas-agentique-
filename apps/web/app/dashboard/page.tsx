@@ -6,6 +6,7 @@ import { api, clearToken, getToken, type CurrentUser, type Project } from "@/lib
 
 const MODULES = [
   { name: "Projets", href: "/projects", desc: "Suivi des affaires et chantiers" },
+  { name: "Chat agents", href: "/chat", desc: "Supervisor + agents, mémoire persistante" },
   { name: "Devis", href: "#", desc: "Génération assistée par QuoteAgent" },
   { name: "Appels d'offres", href: "#", desc: "Détection et qualification GO/NO-GO" },
   { name: "Comptes-rendus", href: "#", desc: "Chantier, visite, réunion, réserve" },
