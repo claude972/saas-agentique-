@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { api, getToken, type Project } from "@/lib/api";
@@ -54,14 +55,16 @@ export default function ProjectsPage() {
 
       <ul className="space-y-2">
         {projects.map((p) => (
-          <li
-            key={p.id}
-            className="flex items-center justify-between rounded-lg border border-slate-200 bg-white px-4 py-3"
-          >
-            <span className="font-medium">{p.name}</span>
-            <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs text-slate-600">
-              {p.status}
-            </span>
+          <li key={p.id}>
+            <Link
+              href={`/projects/${p.id}`}
+              className="flex items-center justify-between rounded-lg border border-slate-200 bg-white px-4 py-3 transition hover:border-brand"
+            >
+              <span className="font-medium">{p.name}</span>
+              <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs text-slate-600">
+                {p.status}
+              </span>
+            </Link>
           </li>
         ))}
         {projects.length === 0 && (

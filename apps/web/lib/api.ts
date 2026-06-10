@@ -32,6 +32,17 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   return res.status === 204 ? (undefined as T) : ((await res.json()) as T);
 }
 
+/** Ouvre dans un nouvel onglet un fichier servi par l'API (auth via header). */
+export async function openAuthed(path: string): Promise<void> {
+  const token = getToken();
+  const res = await fetch(`/api${path}`, {
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  });
+  if (!res.ok) throw new Error(`Erreur ${res.status}`);
+  const url = URL.createObjectURL(await res.blob());
+  window.open(url, "_blank");
+}
+
 export async function login(email: string, password: string): Promise<string> {
   // L'endpoint /auth/login attend un form-urlencoded (OAuth2 password flow).
   const body = new URLSearchParams({ username: email, password });
@@ -84,6 +95,49 @@ export interface ChatPostResponse {
   plan: { agents: string[]; parallel: boolean };
 }
 
+export interface DocumentItem {
+  id: string;
+  filename: string;
+  mime_type: string | null;
+  kind: string;
+}
+
+export interface PhotoItem {
+  id: string;
+  caption: string | null;
+  analysis: string | null;
+}
+
+export interface QuoteItem {
+  id: string;
+  reference: string;
+  status: string;
+  total_ht: number;
+  pdf_s3_key: string | null;
+}
+
+export interface ReportItem {
+  id: string;
+  kind: string;
+  title: string;
+  validated: boolean;
+}
+
+export interface TenderItem {
+  id: string;
+  title: string;
+  buyer: string | null;
+  decision: string;
+  qualification: string | null;
+}
+
+function upload<T>(path: string, file: File, fields: Record<string, string> = {}): Promise<T> {
+  const form = new FormData();
+  form.append("file", file);
+  for (const [k, v] of Object.entries(fields)) form.append(k, v);
+  return request<T>(path, { method: "POST", body: form });
+}
+
 export const api = {
   me: () => request<CurrentUser>("/auth/me"),
   listProjects: () => request<Project[]>("/projects"),
@@ -108,4 +162,58 @@ export const api = {
       method: "POST",
       body: JSON.stringify({ content }),
     }),
+
+  getProject: (id: string) => request<Project>(`/projects/${id}`),
+
+  // Documents
+  listDocuments: (pid: string) => request<DocumentItem[]>(`/projects/${pid}/documents`),
+  uploadDocument: (pid: string, file: File) =>
+    upload<DocumentItem>(`/projects/${pid}/documents`, file),
+  analyzeDocument: (id: string) =>
+    request<DocumentItem>(`/documents/${id}/analyze`, { method: "POST" }),
+
+  // Photos
+  listPhotos: (pid: string) => request<PhotoItem[]>(`/projects/${pid}/photos`),
+  uploadPhoto: (pid: string, file: File, caption: string) =>
+    upload<PhotoItem>(`/projects/${pid}/photos`, file, caption ? { caption } : {}),
+  analyzePhoto: (id: string) =>
+    request<PhotoItem>(`/photos/${id}/analyze`, { method: "POST" }),
+
+  // Devis
+  listQuotes: (pid: string) => request<QuoteItem[]>(`/projects/${pid}/quotes`),
+  generateQuote: (pid: string, description: string) =>
+    request<QuoteItem>(`/projects/${pid}/quotes/generate`, {
+      method: "POST",
+      body: JSON.stringify({ description }),
+    }),
+  buildQuotePdf: (id: string) =>
+    request<QuoteItem>(`/quotes/${id}/pdf`, { method: "POST" }),
+
+  // Comptes-rendus
+  listReports: (pid: string) => request<ReportItem[]>(`/projects/${pid}/reports`),
+  generateReport: (pid: string, title: string, kind: string) =>
+    request<ReportItem>(`/projects/${pid}/reports/generate`, {
+      method: "POST",
+      body: JSON.stringify({ title, kind }),
+    }),
+  validateReport: (id: string) =>
+    request<ReportItem>(`/reports/${id}/validate`, { method: "POST" }),
+
+  // Appels d'offres
+  listTenders: (pid: string) => request<TenderItem[]>(`/projects/${pid}/tenders`),
+  createTender: (pid: string, title: string, buyer: string) =>
+    request<TenderItem>(`/projects/${pid}/tenders`, {
+      method: "POST",
+      body: JSON.stringify({ title, buyer: buyer || null }),
+    }),
+  qualifyTender: (id: string, score: number) =>
+    request<TenderItem>(`/tenders/${id}/qualify`, {
+      method: "POST",
+      body: JSON.stringify({ score }),
+    }),
+  respondTender: (id: string) =>
+    request<{ document_id: string; memoire_technique: string }>(
+      `/tenders/${id}/respond`,
+      { method: "POST" }
+    ),
 };
