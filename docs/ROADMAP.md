@@ -8,10 +8,10 @@
 | 4 | **PhotoAgent** | Analyse photo → ouvrages, quantités, anomalies | ✅ |
 | 5 | **QuoteAgent** | Devis JSON → PDF → archivage | ✅ |
 | 6 | **ReportAgent** | Comptes-rendus chantier/visite/réunion | ✅ |
-| 7 | **AO Crawler** | Détection, téléchargement, qualification GO/NO-GO | 🏗️ |
-| 8 | **ConsultationAgent** | Lecture CCTP/CCAP/BPU/DPGF/plans | 🏗️ |
-| 9 | **TenderAgent** | Mémoire technique, planning, méthodologie | 🏗️ |
-| 10 | **PWA** | Photo, notes vocales, mode mobile offline-first | 🏗️ |
+| 7 | **AO Crawler** | Détection, qualification GO/NO-GO | 🟡 (qualif. + API ; crawl auto à venir) |
+| 8 | **ConsultationAgent** | Lecture CCTP/CCAP/BPU/DPGF/plans | ✅ |
+| 9 | **TenderAgent** | Mémoire technique → dossier archivé | ✅ |
+| 10 | **PWA** | Manifest + service worker offline | 🟡 (coquille PWA ; notes vocales à venir) |
 
 Légende : ✅ implémenté · 🏗️ scaffold + interfaces (prêt à implémenter).
 

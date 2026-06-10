@@ -51,8 +51,10 @@ Voir [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) pour le détail et
 | 4 | PhotoAgent | ✅ Upload photo + analyse (vision) |
 | 5 | QuoteAgent | ✅ Devis structuré → PDF → archivage |
 | 6 | ReportAgent | ✅ Comptes-rendus + validation |
-| 7–9 | AO Crawler · Consultation · Tender | 🏗️ Interfaces + stubs |
-| 10 | PWA | 🏗️ Scaffold frontend (manifest + mobile) |
+| 7 | AO Crawler | 🟡 Qualification GO/NO-GO + API (crawl auto à venir) |
+| 8 | ConsultationAgent | ✅ Lecture CCTP/CCAP/BPU/DPGF |
+| 9 | TenderAgent | ✅ Mémoire technique → dossier archivé |
+| 10 | PWA | 🟡 Manifest + service worker offline |
 
 > **LLM réel** : le routeur multi-LLM intègre Claude (SDK `anthropic`). Avec une
 > clé `ANTHROPIC_API_KEY`, tout le pipeline agentique devient fonctionnel ; sans

@@ -8,6 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from btp_api.config import get_settings
 from btp_api.routers import (
     agents,
+    ao,
     auth,
     chat,
     documents,
@@ -44,6 +45,7 @@ def create_app() -> FastAPI:
     app.include_router(quotes.router)
     app.include_router(photos.router)
     app.include_router(reports.router)
+    app.include_router(ao.router)
     app.include_router(chat.router)
     app.include_router(agents.router)
 

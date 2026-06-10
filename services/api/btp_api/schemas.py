@@ -183,3 +183,37 @@ class ReportOut(BaseModel):
     content: str | None
     validated: bool
     created_at: datetime
+
+
+# --- Appels d'offres (AO / tenders) -------------------------------------------
+class TenderCreate(BaseModel):
+    title: str = Field(min_length=1, max_length=512)
+    source_url: str | None = None
+    buyer: str | None = None
+
+
+class TenderOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: str
+    project_id: str | None
+    title: str
+    source_url: str | None
+    buyer: str | None
+    decision: str
+    qualification: str | None
+    created_at: datetime
+
+
+class TenderQualifyRequest(BaseModel):
+    score: float = Field(ge=0.0, le=1.0)
+    threshold: float = Field(default=0.6, ge=0.0, le=1.0)
+
+
+class ConsultationAnalyzeRequest(BaseModel):
+    document_ids: list[str] = Field(min_length=1)
+
+
+class TenderResponseOut(BaseModel):
+    document_id: str
+    memoire_technique: str
