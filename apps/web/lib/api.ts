@@ -177,9 +177,19 @@ export interface DashboardStats {
   recent_tenders: { id: string; title: string; buyer: string | null; decision: string }[];
 }
 
+export interface SupervisorResult {
+  summary: string;
+  plan: { agents: string[]; parallel: boolean };
+}
+
 export const api = {
   me: () => request<CurrentUser>("/auth/me"),
   dashboardStats: () => request<DashboardStats>("/dashboard/stats"),
+  askSupervisor: (prompt: string) =>
+    request<SupervisorResult>("/agents/supervisor", {
+      method: "POST",
+      body: JSON.stringify({ prompt }),
+    }),
   listProjects: () => request<Project[]>("/projects"),
   createProject: (payload: { name: string; description?: string }) =>
     request<Project>("/projects", {

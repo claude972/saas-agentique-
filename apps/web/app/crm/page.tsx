@@ -1,12 +1,10 @@
 "use client";
 
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { Btn, GhostBtn, Panel } from "@/components/Panel";
+import { Shell } from "@/components/Shell";
 import {
   api,
-  getToken,
   type ClientItem,
   type ContactItem,
   type InteractionItem,
@@ -14,7 +12,6 @@ import {
 } from "@/lib/api";
 
 export default function CrmPage() {
-  const router = useRouter();
   const [clients, setClients] = useState<ClientItem[]>([]);
   const [selected, setSelected] = useState<ClientItem | null>(null);
   const [contacts, setContacts] = useState<ContactItem[]>([]);
@@ -24,12 +21,8 @@ export default function CrmPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!getToken()) {
-      router.push("/login");
-      return;
-    }
     api.listClients().then(setClients).catch((e) => setError(String(e)));
-  }, [router]);
+  }, []);
 
   const loadClient = useCallback(async (c: ClientItem) => {
     setSelected(c);
@@ -60,13 +53,12 @@ export default function CrmPage() {
   }
 
   return (
-    <main className="mx-auto max-w-5xl p-6">
-      <Link href="/dashboard" className="text-sm text-slate-500 hover:underline">
-        ← Tableau de bord
-      </Link>
-      <h1 className="mb-6 mt-1 text-2xl font-bold text-brand">CRM</h1>
+    <Shell active="crm">
+      <div className="mx-auto max-w-5xl px-6 py-7">
+      <h1 className="mb-1 text-2xl font-bold tracking-tight text-ink">CRM</h1>
+      <p className="mb-6 text-sm text-slate-500">Clients, contacts, opportunités et interactions</p>
       {error && (
-        <p className="mb-4 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>
+        <p className="mb-4 rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700">{error}</p>
       )}
 
       <div className="grid gap-4 md:grid-cols-[260px_1fr]">
@@ -137,7 +129,8 @@ export default function CrmPage() {
           )}
         </div>
       </div>
-    </main>
+      </div>
+    </Shell>
   );
 }
 

@@ -57,13 +57,20 @@ class EchoProvider(LLMProvider):
 
     name = "echo"
 
+    # Réponse de démonstration (mode hors-ligne, sans clé LLM).
+    DEMO_TEXT = (
+        "Réponse de démonstration (mode hors-ligne). Configurez une clé LLM "
+        "(Claude, OpenAI, Gemini, Mistral ou DeepSeek) pour activer la "
+        "génération réelle des agents."
+    )
+
     async def complete(
         self, messages: list[LLMMessage], *, model: str | None = None, **kwargs: object
     ) -> LLMResponse:
         last = next((m for m in reversed(messages) if m.role == "user"), None)
         prompt = last.content if last else ""
         return LLMResponse(
-            text=f"[echo:{model or 'mock'}] {prompt}",
+            text=self.DEMO_TEXT,
             provider=self.name,
             model=model or "mock",
             usage={"prompt_tokens": len(prompt.split()), "completion_tokens": 0},
