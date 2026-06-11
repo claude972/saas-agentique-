@@ -56,9 +56,12 @@ Voir [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) pour le détail et
 | 9 | TenderAgent | ✅ Mémoire technique → dossier archivé |
 | 10 | PWA | 🟡 Manifest + service worker offline |
 
-> **LLM réel** : le routeur multi-LLM intègre Claude (SDK `anthropic`). Avec une
-> clé `ANTHROPIC_API_KEY`, tout le pipeline agentique devient fonctionnel ; sans
-> clé, un provider mock déterministe permet le développement et les tests hors-ligne.
+> **LLM réel multi-fournisseurs** : le routeur intègre **Claude** (SDK `anthropic`)
+> et, via une API compatible OpenAI, **GPT, Gemini, Mistral et DeepSeek**.
+> Configure une ou plusieurs clés (`.env`) ; le routage par tâche suit le SRS avec
+> repli automatique sur le premier fournisseur disponible. Sans clé, un provider
+> mock déterministe permet le développement et les tests hors-ligne.
+> **Notes vocales** : transcription Whisper (OpenAI) → ReportAgent.
 
 ## Démarrage rapide
 

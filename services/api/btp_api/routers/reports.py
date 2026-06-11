@@ -11,8 +11,10 @@ from typing import Annotated
 from btp.agents import AgentContext, get_agent
 from btp.auth.rbac import Action, Resource
 from btp.database.models import Project, Report, User
+from btp.database.models.enums import ReportKind
+from btp.llm_router import TranscriptionUnavailable, transcribe
 from btp.reports import validate_report
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
 from sqlalchemy import select
 
 from btp_api.deps import DbSession, require_permission
@@ -82,3 +84,43 @@ def get_report(report_id: str, db: DbSession, _: _read) -> Report:
 def validate(report_id: str, db: DbSession, _: _write) -> Report:
     report = _report_or_404(db, report_id)
     return validate_report(db, report)
+
+
+@router.post(
+    "/projects/{project_id}/reports/from-audio",
+    response_model=ReportOut,
+    status_code=status.HTTP_201_CREATED,
+)
+async def report_from_audio(
+    project_id: str,
+    db: DbSession,
+    _: _write,
+    file: Annotated[UploadFile, File()],
+    title: Annotated[str, Form()] = "Compte-rendu vocal",
+    kind: Annotated[ReportKind, Form()] = ReportKind.CHANTIER,
+) -> Report:
+    """Note vocale → transcription (Whisper) → ReportAgent → compte-rendu."""
+    if db.get(Project, project_id) is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Projet introuvable")
+
+    audio = await file.read()
+    try:
+        transcript = await transcribe(audio, filename=file.filename or "audio.webm")
+    except TranscriptionUnavailable as exc:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=str(exc)
+        ) from exc
+
+    agent = get_agent("ReportAgent")
+    result = await agent.run(
+        AgentContext(project_id=project_id, prompt=transcript, inputs={"kind": kind.value})
+    )
+    report = Report(
+        project_id=project_id,
+        kind=kind,
+        title=title,
+        content=str(result.output.get("content") or result.summary),
+    )
+    db.add(report)
+    db.flush()
+    return report

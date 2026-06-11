@@ -14,6 +14,7 @@ class Provider(str, enum.Enum):
     GPT = "gpt"
     GEMINI = "gemini"
     MISTRAL = "mistral"
+    DEEPSEEK = "deepseek"
 
 
 class TaskType(str, enum.Enum):
@@ -52,7 +53,29 @@ _PROVIDER_ENV_KEY: dict[Provider, str] = {
     Provider.GPT: "OPENAI_API_KEY",
     Provider.GEMINI: "GOOGLE_API_KEY",
     Provider.MISTRAL: "MISTRAL_API_KEY",
+    Provider.DEEPSEEK: "DEEPSEEK_API_KEY",
 }
+
+# Configuration des fournisseurs compatibles OpenAI : (base_url, var modèle, modèle).
+_OPENAI_COMPATIBLE: dict[Provider, tuple[str, str, str]] = {
+    Provider.GPT: ("https://api.openai.com/v1", "OPENAI_MODEL", "gpt-4o"),
+    Provider.GEMINI: (
+        "https://generativelanguage.googleapis.com/v1beta/openai/",
+        "GEMINI_MODEL",
+        "gemini-1.5-pro",
+    ),
+    Provider.MISTRAL: ("https://api.mistral.ai/v1", "MISTRAL_MODEL", "mistral-large-latest"),
+    Provider.DEEPSEEK: ("https://api.deepseek.com", "DEEPSEEK_MODEL", "deepseek-chat"),
+}
+
+# Ordre de repli quand le fournisseur routé n'a pas de clé configurée.
+_FALLBACK_ORDER = (
+    Provider.CLAUDE,
+    Provider.GPT,
+    Provider.DEEPSEEK,
+    Provider.GEMINI,
+    Provider.MISTRAL,
+)
 
 
 class LLMRouter:
@@ -82,15 +105,17 @@ class LLMRouter:
     def _build_client(self, provider: Provider) -> LLMProvider:
         """Construit le client d'un provider.
 
-        Stratégie pour rester fonctionnel dès qu'une seule clé est fournie :
-        1. si le provider routé est configuré → son client réel ;
-        2. sinon, si Claude est configuré → Claude (multimodal, polyvalent) ;
+        Stratégie pour rester fonctionnel quels que soient les fournisseurs
+        configurés :
+        1. si le provider routé a sa clé → son client réel ;
+        2. sinon, premier fournisseur configuré dans l'ordre de repli ;
         3. sinon → mock déterministe hors-ligne.
         """
         if self.is_configured(provider):
             return self._make_real(provider)
-        if self.is_configured(Provider.CLAUDE):
-            return self._make_real(Provider.CLAUDE)
+        for fallback in _FALLBACK_ORDER:
+            if self.is_configured(fallback):
+                return self._make_real(fallback)
         return EchoProvider()
 
     def _make_real(self, provider: Provider) -> LLMProvider:
@@ -98,13 +123,16 @@ class LLMRouter:
             from btp.llm_router.anthropic_provider import AnthropicProvider
 
             return AnthropicProvider()
-        # Les intégrations GPT / Gemini / Mistral seront branchées ici ;
-        # en attendant, on retombe sur Claude si possible, sinon sur le mock.
-        if self.is_configured(Provider.CLAUDE):
-            from btp.llm_router.anthropic_provider import AnthropicProvider
 
-            return AnthropicProvider()
-        return EchoProvider()
+        base_url, model_env, default_model = _OPENAI_COMPATIBLE[provider]
+        from btp.llm_router.openai_provider import OpenAICompatibleProvider
+
+        return OpenAICompatibleProvider(
+            name=provider.value,
+            api_key=os.environ[_PROVIDER_ENV_KEY[provider]],
+            base_url=base_url,
+            model=os.getenv(model_env, default_model),
+        )
 
 
 @lru_cache(maxsize=1)

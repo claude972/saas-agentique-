@@ -22,6 +22,11 @@ from btp.llm_router.router import (
     TaskType,
     get_router,
 )
+from btp.llm_router.transcription import (
+    TranscriptionUnavailable,
+    transcribe,
+    transcription_available,
+)
 
 __all__ = [
     "LLMRouter",
@@ -33,4 +38,7 @@ __all__ = [
     "LLMMessage",
     "LLMResponse",
     "EchoProvider",
+    "transcribe",
+    "transcription_available",
+    "TranscriptionUnavailable",
 ]

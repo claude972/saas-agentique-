@@ -55,3 +55,15 @@ def test_report_generate_and_validate(client, admin_token):
     validated = client.post(f"/reports/{rid}/validate", headers=_auth(admin_token))
     assert validated.status_code == 200
     assert validated.json()["validated"] is True
+
+
+def test_report_from_audio_requires_transcription(client, admin_token, monkeypatch):
+    # Sans OPENAI_API_KEY, la transcription est indisponible → 503 explicite.
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    pid = _project(client, admin_token)
+    resp = client.post(
+        f"/projects/{pid}/reports/from-audio",
+        files={"file": ("note.webm", io.BytesIO(b"fake-audio"), "audio/webm")},
+        headers=_auth(admin_token),
+    )
+    assert resp.status_code == 503

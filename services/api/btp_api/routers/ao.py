@@ -18,7 +18,10 @@ from btp.auth.rbac import Action, Resource
 from btp.database.models import Document, Project, Tender, User
 from btp.database.models.enums import DocumentKind
 from btp.documents import get_object_store
+from btp_crawler import process
+from btp_crawler.boamp import search as boamp_search
 from fastapi import APIRouter, Depends, HTTPException, status
+from pydantic import BaseModel, Field
 from sqlalchemy import select
 
 from btp_api.deps import DbSession, require_permission
@@ -29,6 +32,11 @@ from btp_api.schemas import (
     TenderQualifyRequest,
     TenderResponseOut,
 )
+
+
+class TenderDetectRequest(BaseModel):
+    keywords: str = Field(min_length=2)
+    limit: int = Field(default=10, ge=1, le=50)
 
 router = APIRouter(tags=["ao"])
 
@@ -63,6 +71,36 @@ def create_tender(
     db.add(tender)
     db.flush()
     return tender
+
+
+@router.post(
+    "/projects/{project_id}/tenders/detect",
+    response_model=list[TenderOut],
+    status_code=status.HTTP_201_CREATED,
+)
+def detect_tenders(
+    project_id: str, payload: TenderDetectRequest, db: DbSession, _: _write
+) -> list[Tender]:
+    """Détecte des AO sur le BOAMP, les importe et les pré-qualifie (GO/NO-GO)."""
+    if db.get(Project, project_id) is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Projet introuvable")
+
+    detected = boamp_search(payload.keywords, limit=payload.limit)
+    created: list[Tender] = []
+    for item in detected:
+        qualification = process(item)
+        tender = Tender(
+            project_id=project_id,
+            title=item.title,
+            source_url=item.url or None,
+            buyer=item.buyer,
+            decision=qualification.decision,
+            qualification=qualification.rationale,
+        )
+        db.add(tender)
+        created.append(tender)
+    db.flush()
+    return created
 
 
 @router.get("/projects/{project_id}/tenders", response_model=list[TenderOut])
