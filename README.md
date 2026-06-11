@@ -13,6 +13,9 @@ La plateforme orchestre une équipe d'agents IA spécialisés pour :
 - centraliser la **relation client (CRM)**
 - gérer les **documents projets**
 
+Accessible via le **web/PWA** et un **bot Telegram** (photo/texte/vocal → agents,
++ alertes AO).
+
 ## Architecture
 
 Monorepo polyglotte :

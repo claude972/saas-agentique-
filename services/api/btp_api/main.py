@@ -18,6 +18,7 @@ from btp_api.routers import (
     projects,
     quotes,
     reports,
+    telegram,
     users,
 )
 
@@ -50,6 +51,7 @@ def create_app() -> FastAPI:
     app.include_router(crm.router)
     app.include_router(chat.router)
     app.include_router(agents.router)
+    app.include_router(telegram.router)
 
     @app.get("/", tags=["health"])
     def root() -> dict[str, str]:

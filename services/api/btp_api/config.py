@@ -20,6 +20,11 @@ class Settings(BaseSettings):
     database_url: str = "sqlite:///./btp.db"
     redis_url: str = "redis://localhost:6379/0"
 
+    # Telegram (optionnel) : bot entrant (webhook) + notifications sortantes.
+    telegram_bot_token: str = ""
+    telegram_webhook_secret: str = ""
+    telegram_alert_chat_id: str = ""
+
     cors_origins: str = "http://localhost:3000"
 
     @property

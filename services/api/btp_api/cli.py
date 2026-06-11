@@ -43,5 +43,23 @@ def create_admin(
     typer.secho(f"Administrateur {email} créé.", fg=typer.colors.GREEN)
 
 
+@app.command("set-telegram-webhook")
+def set_telegram_webhook(
+    url: str = typer.Option(..., help="URL publique du webhook, ex. https://api.exemple.fr/telegram/webhook"),
+    secret: str = typer.Option("", help="Secret partagé (= TELEGRAM_WEBHOOK_SECRET)"),
+) -> None:
+    """Enregistre le webhook du bot Telegram auprès de l'API Telegram."""
+    import asyncio
+
+    from btp_telegram import set_webhook
+
+    result = asyncio.run(set_webhook(url, secret=secret or None))
+    if result.get("ok"):
+        typer.secho("Webhook Telegram configuré.", fg=typer.colors.GREEN)
+    else:
+        typer.secho(f"Échec : {result}", fg=typer.colors.RED)
+        raise typer.Exit(code=1)
+
+
 if __name__ == "__main__":
     app()

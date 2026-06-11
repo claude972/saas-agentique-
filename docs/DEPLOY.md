@@ -37,6 +37,21 @@ Importer le dossier `apps/web` (framework Next.js auto-détecté, cf.
 Les appels `/api/*` du frontend sont proxifiés vers `API_URL`
 (`next.config.mjs`), évitant les problèmes de CORS côté navigateur.
 
+## Bot Telegram (optionnel)
+
+1. Créer un bot via [@BotFather](https://t.me/BotFather) → récupérer le token.
+2. Définir sur l'API : `TELEGRAM_BOT_TOKEN`, `TELEGRAM_WEBHOOK_SECRET` (chaîne
+   aléatoire), et `TELEGRAM_ALERT_CHAT_ID` (pour les alertes AO sortantes).
+3. Enregistrer le webhook (une fois l'API en ligne) :
+
+   ```bash
+   uv run btp-api set-telegram-webhook \
+     --url https://<api>/telegram/webhook --secret "$TELEGRAM_WEBHOOK_SECRET"
+   ```
+
+Le bot accepte alors : **texte** (→ agent), **photo** (→ PhotoAgent), **vocal**
+(→ transcription + agent). Les AO détectés GO sont notifiés dans le chat d'alerte.
+
 ## Local (rappel)
 
 ```bash

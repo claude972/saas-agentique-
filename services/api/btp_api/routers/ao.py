@@ -16,10 +16,11 @@ from btp.agents import AgentContext, get_agent
 from btp.ao import qualify
 from btp.auth.rbac import Action, Resource
 from btp.database.models import Document, Project, Tender, User
-from btp.database.models.enums import DocumentKind
+from btp.database.models.enums import DocumentKind, TenderDecision
 from btp.documents import get_object_store
 from btp_crawler import process
 from btp_crawler.boamp import search as boamp_search
+from btp_telegram import notify
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
 from sqlalchemy import select
@@ -78,15 +79,19 @@ def create_tender(
     response_model=list[TenderOut],
     status_code=status.HTTP_201_CREATED,
 )
-def detect_tenders(
+async def detect_tenders(
     project_id: str, payload: TenderDetectRequest, db: DbSession, _: _write
 ) -> list[Tender]:
-    """Détecte des AO sur le BOAMP, les importe et les pré-qualifie (GO/NO-GO)."""
+    """Détecte des AO sur le BOAMP, les importe et les pré-qualifie (GO/NO-GO).
+
+    Les AO qualifiés GO déclenchent une notification Telegram (si configurée).
+    """
     if db.get(Project, project_id) is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Projet introuvable")
 
     detected = boamp_search(payload.keywords, limit=payload.limit)
     created: list[Tender] = []
+    go_titles: list[str] = []
     for item in detected:
         qualification = process(item)
         tender = Tender(
@@ -99,7 +104,13 @@ def detect_tenders(
         )
         db.add(tender)
         created.append(tender)
+        if qualification.decision is TenderDecision.GO:
+            go_titles.append(item.title)
     db.flush()
+
+    if go_titles:
+        lines = "\n".join(f"• {t}" for t in go_titles)
+        await notify(f"🟢 *{len(go_titles)} AO GO détecté(s)* (BOAMP)\n{lines}")
     return created
 
 

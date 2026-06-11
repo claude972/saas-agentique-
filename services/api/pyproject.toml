@@ -18,6 +18,7 @@ dependencies = [
     "btp-quotes",
     "btp-crm",
     "btp-crawler",
+    "btp-telegram",
 ]
 
 [project.scripts]

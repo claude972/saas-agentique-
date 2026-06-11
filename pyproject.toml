@@ -18,6 +18,7 @@ dependencies = [
     "btp-api",
     "btp-workers",
     "btp-crawler",
+    "btp-telegram",
 ]
 
 [tool.uv.workspace]
@@ -37,6 +38,7 @@ btp-documents = { workspace = true }
 btp-api = { workspace = true }
 btp-workers = { workspace = true }
 btp-crawler = { workspace = true }
+btp-telegram = { workspace = true }
 
 [dependency-groups]
 dev = [

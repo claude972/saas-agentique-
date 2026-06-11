@@ -20,6 +20,7 @@ members = [
     "btp-llm-router",
     "btp-quotes",
     "btp-reports",
+    "btp-telegram",
     "btp-vector-store",
     "btp-workers",
 ]
@@ -153,6 +154,7 @@ dependencies = [
     { name = "btp-llm-router" },
     { name = "btp-quotes" },
     { name = "btp-reports" },
+    { name = "btp-telegram" },
     { name = "btp-vector-store" },
     { name = "btp-workers" },
 ]
@@ -179,6 +181,7 @@ requires-dist = [
     { name = "btp-llm-router", editable = "packages/llm-router" },
     { name = "btp-quotes", editable = "packages/quotes" },
     { name = "btp-reports", editable = "packages/reports" },
+    { name = "btp-telegram", editable = "services/telegram" },
     { name = "btp-vector-store", editable = "packages/vector-store" },
     { name = "btp-workers", editable = "services/workers" },
 ]
@@ -231,6 +234,7 @@ dependencies = [
     { name = "btp-documents" },
     { name = "btp-llm-router" },
     { name = "btp-quotes" },
+    { name = "btp-telegram" },
     { name = "fastapi" },
     { name = "pydantic", extra = ["email"] },
     { name = "pydantic-settings" },
@@ -249,6 +253,7 @@ requires-dist = [
     { name = "btp-documents", editable = "packages/documents" },
     { name = "btp-llm-router", editable = "packages/llm-router" },
     { name = "btp-quotes", editable = "packages/quotes" },
+    { name = "btp-telegram", editable = "services/telegram" },
     { name = "fastapi", specifier = ">=0.115" },
     { name = "pydantic", extras = ["email"], specifier = ">=2.7" },
     { name = "pydantic-settings", specifier = ">=2.3" },
@@ -370,6 +375,23 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [{ name = "btp-database", editable = "packages/database" }]
+
+[[package]]
+name = "btp-telegram"
+version = "1.0.0"
+source = { editable = "services/telegram" }
+dependencies = [
+    { name = "btp-agents" },
+    { name = "btp-llm-router" },
+    { name = "httpx" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "btp-agents", editable = "packages/agents" },
+    { name = "btp-llm-router", editable = "packages/llm-router" },
+    { name = "httpx", specifier = ">=0.27" },
+]
 
 [[package]]
 name = "btp-vector-store"
