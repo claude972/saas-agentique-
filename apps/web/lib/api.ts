@@ -165,8 +165,21 @@ function upload<T>(path: string, file: File, fields: Record<string, string> = {}
   return request<T>(path, { method: "POST", body: form });
 }
 
+export interface DashboardStats {
+  projects_active: number;
+  quotes_count: number;
+  quotes_total_ht: number;
+  tenders_total: number;
+  tenders_go: number;
+  reports_count: number;
+  agents_count: number;
+  recent_quotes: { id: string; reference: string; total_ht: number; status: string }[];
+  recent_tenders: { id: string; title: string; buyer: string | null; decision: string }[];
+}
+
 export const api = {
   me: () => request<CurrentUser>("/auth/me"),
+  dashboardStats: () => request<DashboardStats>("/dashboard/stats"),
   listProjects: () => request<Project[]>("/projects"),
   createProject: (payload: { name: string; description?: string }) =>
     request<Project>("/projects", {
