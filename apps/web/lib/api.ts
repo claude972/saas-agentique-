@@ -131,6 +131,33 @@ export interface TenderItem {
   qualification: string | null;
 }
 
+export interface ClientItem {
+  id: string;
+  name: string;
+  siret: string | null;
+  address: string | null;
+}
+
+export interface ContactItem {
+  id: string;
+  full_name: string;
+  role: string | null;
+  email: string | null;
+}
+
+export interface OpportunityItem {
+  id: string;
+  title: string;
+  stage: string;
+  amount: number | null;
+}
+
+export interface InteractionItem {
+  id: string;
+  channel: string;
+  summary: string;
+}
+
 function upload<T>(path: string, file: File, fields: Record<string, string> = {}): Promise<T> {
   const form = new FormData();
   form.append("file", file);
@@ -216,4 +243,39 @@ export const api = {
       `/tenders/${id}/respond`,
       { method: "POST" }
     ),
+  detectTenders: (pid: string, keywords: string) =>
+    request<TenderItem[]>(`/projects/${pid}/tenders/detect`, {
+      method: "POST",
+      body: JSON.stringify({ keywords }),
+    }),
+  reportFromAudio: (pid: string, file: File) =>
+    upload<ReportItem>(`/projects/${pid}/reports/from-audio`, file),
+
+  // CRM
+  listClients: () => request<ClientItem[]>("/crm/clients"),
+  createClient: (name: string, siret: string) =>
+    request<ClientItem>("/crm/clients", {
+      method: "POST",
+      body: JSON.stringify({ name, siret: siret || null }),
+    }),
+  listContacts: (cid: string) => request<ContactItem[]>(`/crm/clients/${cid}/contacts`),
+  addContact: (cid: string, full_name: string) =>
+    request<ContactItem>(`/crm/clients/${cid}/contacts`, {
+      method: "POST",
+      body: JSON.stringify({ full_name }),
+    }),
+  listOpportunities: (cid: string) =>
+    request<OpportunityItem[]>(`/crm/clients/${cid}/opportunities`),
+  addOpportunity: (cid: string, title: string, amount: number | null) =>
+    request<OpportunityItem>(`/crm/clients/${cid}/opportunities`, {
+      method: "POST",
+      body: JSON.stringify({ title, amount }),
+    }),
+  listInteractions: (cid: string) =>
+    request<InteractionItem[]>(`/crm/clients/${cid}/interactions`),
+  addInteraction: (cid: string, summary: string) =>
+    request<InteractionItem>(`/crm/clients/${cid}/interactions`, {
+      method: "POST",
+      body: JSON.stringify({ summary }),
+    }),
 };

@@ -10,7 +10,7 @@ const MODULES = [
   { name: "Devis", href: "#", desc: "Génération assistée par QuoteAgent" },
   { name: "Appels d'offres", href: "#", desc: "Détection et qualification GO/NO-GO" },
   { name: "Comptes-rendus", href: "#", desc: "Chantier, visite, réunion, réserve" },
-  { name: "CRM", href: "#", desc: "Clients, contacts, opportunités" },
+  { name: "CRM", href: "/crm", desc: "Clients, contacts, opportunités" },
   { name: "Documents", href: "#", desc: "OCR, classement, recherche" },
 ];
 

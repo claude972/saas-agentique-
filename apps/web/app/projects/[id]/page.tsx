@@ -142,6 +142,12 @@ export default function ProjectHub() {
             button="Générer"
             onSubmit={(v) => guard(api.generateReport(pid, v, "chantier"))}
           />
+          <div className="mt-1">
+            <FileInput
+              label="🎙️ Note vocale → CR"
+              onFile={(f) => guard(api.reportFromAudio(pid, f))}
+            />
+          </div>
           <List
             items={reports}
             render={(r) => (
@@ -165,6 +171,13 @@ export default function ProjectHub() {
             button="Enregistrer"
             onSubmit={(v) => guard(api.createTender(pid, v, ""))}
           />
+          <div className="mt-1">
+            <TextAction
+              placeholder="Mots-clés BOAMP (ex. gros œuvre)…"
+              button="Détecter"
+              onSubmit={(v) => guard(api.detectTenders(pid, v))}
+            />
+          </div>
           <List
             items={tenders}
             render={(t) => (
